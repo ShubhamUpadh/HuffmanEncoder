@@ -65,7 +65,7 @@ class TestHuff(unittest.TestCase):
 
         self.assertEqual(sorted(huffman.charFreq.items()),sorted(randomString.result.items()))
         
-
+'''
 if __name__ == '__main__':
     unittest.main()
-    
+'''

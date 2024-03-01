@@ -1,6 +1,13 @@
 import os
 import sys
 
+class Node:
+    def __init__(self,alphabet=None,value=None):
+        self.alphabet = alphabet
+        self.value = value
+        self.left = None
+        self.right = None
+
 class Huffman:
     
     def __init__(self,fileName):
