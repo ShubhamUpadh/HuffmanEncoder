@@ -3,6 +3,9 @@ The goals are as
 2. Create a Huffman Encoder
 3. Write unit tests at each and every stage
 
+Progress 
+1. Frequency dict made
+2. I'm making the Heap
 
 Learnings
 1. There will be no case where a = 00 and g = 001, because all the nodes are leaf nodes. Hence, 
