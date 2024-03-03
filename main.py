@@ -22,6 +22,7 @@ class Huffman:
         self.codeDict = {}      # Store the codes here
         self.encodedText = ""   # Store the encoded text here
         self.paddedText = ""    # We need to pad the text in order to convert it properly it to binary form
+        self.byteArr = []       # This will store the code of each character in byte form
     
     def fileCheck(self):
         #print(self.fileName)
@@ -99,6 +100,15 @@ class Huffman:
         paddingInfo = {"0:08b"}.format(padding)
         #Now we will append this info to the beginning of the file
         self.paddedText = paddingInfo + self.paddedText
+    
+    def convertToBytes(self):
+        # From the padded text, now convert it to bytes
+        self.byteArr = []
+        for i in range(len(self.paddedText),8):
+            byte = self.paddedText[i:i+8]
+            self.byteArr.append(int(byte,2))
+        self.byteArr = bytes(self.byteArr)
+    
         
              
         
