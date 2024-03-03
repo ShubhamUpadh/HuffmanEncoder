@@ -49,7 +49,7 @@ class Huffman:
             heapq.heappush(self.heap, btNode)
     
     def buildTree(self):
-        # heap created, now start creating the binary tree
+        # heap created, now start combining the nodes inside the heap
         while len(self.heap) > 1:
             smallest1 = heapq.heappop(self.heap)
             smallest2 = heapq.heappop(self.heap)
