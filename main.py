@@ -20,6 +20,8 @@ class Huffman:
         self.heap =[]
         self.root = None        # Store the root of the Binary Tree
         self.codeDict = {}      # Store the codes here
+        self.encodedText = ""   # Store the encoded text here
+        self.paddedText = ""    # We need to pad the text in order to convert it properly it to binary form
     
     def fileCheck(self):
         #print(self.fileName)
@@ -74,6 +76,32 @@ class Huffman:
     def createCodeDict(self): 
         # Use the root of the BT to create the dictionary
         self.createCodeDictHelper(self.root,currPath="")
+    
+    def encodeText(self):
+        # Open the file, read it character-wise and now use the codeDict to convert each character to code
+        with open(self.fileName,'r',encoding='utf-8') as file:
+            while True:
+                char = file.read(1)     # read one character from the the file
+                self.encodedText += self.codeDict[char]
+                #print(char)
+    
+    def padEncodedText(self):
+        # The logic behind padding is that we want to ensure that the conversion to binary is done properly
+        # For example, 1001011001 will not be encoded properly as 1 byte = 8 bit so the file will be split as
+        # 10010110 and 01
+        # Padding will convert this to 10010110 and 01000000
+        # Basically we will add extra 0s to ensure that this can be represented as a byte always 
+        padding = 8 - len(self.encodedText) % 8
+        self.paddedText = "" + self.encodedText
+        for _ in padding:
+            self.paddedText += "0"
+        # Now we will store the info that we are padding the file
+        paddingInfo = {"0:08b"}.format(padding)
+        #Now we will append this info to the beginning of the file
+        self.paddedText = paddingInfo + self.paddedText
+        
+             
+        
         
 #print(sys.argv[1])
 huffman = Huffman(sys.argv[1])

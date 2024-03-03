@@ -5,7 +5,10 @@ The goals are as
 
 Progress 
 1. Frequency dict made
-2. I'm making the Heap
+2. I've made the Heap
+3. I've made the code dicitonary
+4. I'm encoding the file now 
+
 
 Learnings
 1. There will be no case where a = 00 and g = 001, because all the nodes are leaf nodes. Hence, 
