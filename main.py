@@ -16,6 +16,7 @@ class Node:
 class Huffman:
     def __init__(self,fileName):
         self.fileName = fileName + '.txt'
+        self.outputFile = self.fileName + 'output'+'.bin'   # This will be the output file
         self.charFreq = {}      # We are storing this as a dictionary, it can be optimised to an array ????
         self.heap =[]
         self.root = None        # Store the root of the Binary Tree
@@ -70,8 +71,8 @@ class Huffman:
             return
         if node.alphabet is not None:
             self.codeDict[node.alphabet] = currPath
-        self.createCodeDictHelper(self,node.left,currPath+"0")
-        self.createCodeDictHelper(self,node.right,currPath+"1")
+        self.createCodeDictHelper(node.left,currPath+"0")
+        self.createCodeDictHelper(node.right,currPath+"1")
         return    
     
     def createCodeDict(self): 
@@ -97,7 +98,7 @@ class Huffman:
         for _ in padding:
             self.paddedText += "0"
         # Now we will store the info that we are padding the file
-        paddingInfo = {"0:08b"}.format(padding)
+        paddingInfo = "{0:08b}".format(padding)
         #Now we will append this info to the beginning of the file
         self.paddedText = paddingInfo + self.paddedText
     
@@ -109,10 +110,19 @@ class Huffman:
             self.byteArr.append(int(byte,2))
         self.byteArr = bytes(self.byteArr)
     
-        
-             
-        
-        
+    def createEncodePaddedText(self):
+        self.fileCheck()    # ensure that the file exists
+        # Now we will encode this file
+        with  open(self.outputFile,'wb') as output:
+            self.charCount()    # count the frequency of characters
+            self.createHeap()   # create a heap
+            self.buildTree()    # build tree using the heap values
+            self.createCodeDict()   # create the codes for characters using the Tree
+            self.encodeText()   # encode the txt file using the codes from CodeDict dictionary
+            self.padEncodedText()   # pad the encoded text
+            self.convertToBytes()   # convert the padded encoded text to Bytes 
+            output.write(self.byteArr)  # write the ouput file
+    
 #print(sys.argv[1])
 huffman = Huffman(sys.argv[1])
 huffman.fileCheck()
