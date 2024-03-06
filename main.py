@@ -15,8 +15,8 @@ class Node:
     
 class Huffman:
     def __init__(self,fileName):
-        self.fileName = fileName + '.txt'
-        self.outputFile = self.fileName + 'output'+'.bin'   # This will be the output file
+        self.fileName = fileName if fileName[-4:] =='.txt' else fileName + '.txt'
+        self.outputFile = self.fileName[:-4] + 'output'+'.txt'   # This will be the output file
         self.charFreq = {}      # We are storing this as a dictionary, it can be optimised to an array ????
         self.heap =[]
         self.root = None        # Store the root of the Binary Tree
@@ -37,14 +37,14 @@ class Huffman:
         with open(self.fileName,'r',encoding='utf-8') as file:
             while True:
                 char = file.read(1)
-                if char in self.charFreq:
+                if char in self.charFreq and char != "":
                     self.charFreq[char] += 1
-                else:
+                elif char != "":
                     self.charFreq[char] = 1
                 if not char:
                     break
                 #print(char)
-        print(self.charFreq['X'],self.charFreq['t'])
+        #print(self.charFreq['X'],self.charFreq['t'])
     
     def createHeap(self):
         # create a binary tree node first for alphabet and its corresponding frequency, and push the node in heap
@@ -54,20 +54,36 @@ class Huffman:
             heapq.heappush(self.heap, btNode)
     
     def buildTree(self):
-        # heap created, now start combining the nodes inside the heap tp form the tree
+        # heap created, now start combining the nodes inside the heap to form the tree
         while len(self.heap) > 1:
             smallest1 = heapq.heappop(self.heap)
             smallest2 = heapq.heappop(self.heap)
             newNode = Node(freq = smallest1.freq + smallest2.freq)
             newNode.left = smallest1
             newNode.right = smallest2
-            heapq.heappushpush(self.heap, newNode)
+            heapq.heappush(self.heap, newNode)
         # This variable will store the root of the Binary Tree
         self.root = heapq.heappop(self.heap)
+        #self.printTree(self.root)
+    
+    def printTree(self,node):
+        if node is None:
+            return
+        q = []
+        q.append(node)
+        while len(q):
+            for i in range(len(q)):
+                rt = q.pop(0)
+                if rt.left:
+                    q.append(rt.left)
+                if rt.right:
+                    q.append(rt.right)
+                print(rt.alphabet,rt.freq, end=", ")
+            print("")
     
     def createCodeDictHelper(self,node,currPath):
         # Helper Function for createCodeDict
-        if node == None:
+        if node is None:
             return
         if node.alphabet is not None:
             self.codeDict[node.alphabet] = currPath
@@ -84,6 +100,8 @@ class Huffman:
         with open(self.fileName,'r',encoding='utf-8') as file:
             while True:
                 char = file.read(1)     # read one character from the the file
+                if not char:
+                    break # End of file
                 self.encodedText += self.codeDict[char]
                 #print(char)
     
@@ -94,8 +112,8 @@ class Huffman:
         # Padding will convert this to 10010110 and 01000000
         # Basically we will add extra 0s to ensure that this can be represented as a byte always 
         padding = 8 - len(self.encodedText) % 8
-        self.paddedText = "" + self.encodedText
-        for _ in padding:
+        self.paddedText = "".join(self.encodedText)
+        for _ in range(padding):
             self.paddedText += "0"
         # Now we will store the info that we are padding the file
         paddingInfo = "{0:08b}".format(padding)
@@ -105,14 +123,31 @@ class Huffman:
     def convertToBytes(self):
         # From the padded text, now convert it to bytes
         self.byteArr = []
-        for i in range(len(self.paddedText),8):
+        for i in range(0,len(self.paddedText),8):
             byte = self.paddedText[i:i+8]
             self.byteArr.append(int(byte,2))
+        #print(self.byteArr,"here")
         self.byteArr = bytes(self.byteArr)
+        #print(self.byteArr,"here2")
+        '''
+        for i in range
+        '''
     
-    def createEncodePaddedText(self):
+    def createEncodePaddedTextOutputFile(self):
         self.fileCheck()    # ensure that the file exists
+        '''
+        self.charCount()
+        self.createHeap()
+        self.buildTree()
+        self.createCodeDict()
+        self.encodeText()
+        self.padEncodedText()
+        self.convertToBytes()
+        with open('debug.txt','w') as file:
+            file.write(str(self.paddedText))
+        print(len(self.encodedText),len(self.paddedText))
         # Now we will encode this file
+        '''
         with  open(self.outputFile,'wb') as output:
             self.charCount()    # count the frequency of characters
             self.createHeap()   # create a heap
@@ -122,8 +157,8 @@ class Huffman:
             self.padEncodedText()   # pad the encoded text
             self.convertToBytes()   # convert the padded encoded text to Bytes 
             output.write(self.byteArr)  # write the ouput file
+            print("Writing output file")
     
 #print(sys.argv[1])
 huffman = Huffman(sys.argv[1])
-huffman.fileCheck()
-huffman.charCount()
+huffman.createEncodePaddedTextOutputFile()
