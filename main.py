@@ -16,11 +16,14 @@ class Node:
 class Huffman:
     def __init__(self,fileName):
         self.fileName = fileName if fileName[-4:] =='.txt' else fileName + '.txt'
-        self.outputFile = self.fileName[:-4] + 'output'+'.txt'   # This will be the output file
+        self.compressedFile = self.fileName[:-4] + 'output'+'.bin'   # This will be the output file
+        #self.decompressedFile,self.temp = os.path.splitext(self.fileName)
+        self.decompressedFile = os.path.splitext(self.fileName)[0] + 'decompressed' +'.txt'
         self.charFreq = {}      # We are storing this as a dictionary, it can be optimised to an array ????
         self.heap =[]
         self.root = None        # Store the root of the Binary Tree
-        self.codeDict = {}      # Store the codes here
+        self.codeDict = {}      # Store the character-codes mapping here
+        self.returnCodeDict ={} # store the codes-character mapping here
         self.encodedText = ""   # Store the encoded text here
         self.paddedText = ""    # We need to pad the text in order to convert it properly it to binary form
         self.byteArr = []       # This will store the code of each character in byte form
@@ -87,6 +90,7 @@ class Huffman:
             return
         if node.alphabet is not None:
             self.codeDict[node.alphabet] = currPath
+            self.returnCodeDict[currPath] = node.alphabet
         self.createCodeDictHelper(node.left,currPath+"0")
         self.createCodeDictHelper(node.right,currPath+"1")
         return    
@@ -148,7 +152,7 @@ class Huffman:
         print(len(self.encodedText),len(self.paddedText))
         # Now we will encode this file
         '''
-        with  open(self.outputFile,'wb') as output:
+        with  open(self.compressedFile,'wb') as output:
             self.charCount()    # count the frequency of characters
             self.createHeap()   # create a heap
             self.buildTree()    # build tree using the heap values
@@ -158,7 +162,43 @@ class Huffman:
             self.convertToBytes()   # convert the padded encoded text to Bytes 
             output.write(self.byteArr)  # write the ouput file
             print("Writing output file")
+                
+    def removePadding(self,text):
+        paddedInfo = text[:8]
+        extraPadding = int(paddedInfo,2)
+        text = text[8:]                     # remove padding at the start
+        textWithEndPaddingRemoved = text[:-1*extraPadding]
+        return textWithEndPaddingRemoved
+    
+    def decodeText(self,text):
+        decodedStr = ""
+        i = 0
+        currCode = ""
+        while i < len(text):
+            currCode += text[i]
+            if currCode in self.returnCodeDict:
+                decodedStr += self.returnCodeDict[currCode]
+                currCode = ""
+            i += 1
+        return decodedStr
+    
+    def decompress(self):
+        with open(self.compressedFile,'rb') as file, open(self.decompressedFile,'w') as output:
+            bitString =""
+            byte = file.read(1)
+            while byte:
+                byte = ord(byte)
+                bits = bin(byte)[2:].rjust(8,'0')
+                bitString += bits
+                byte = file.read(1)
+            actualText = self.removePadding(bitString)
+            decompressedText = self.decodeText(actualText)
+            output.write(decompressedText)
+    
+                
+        
     
 #print(sys.argv[1])
 huffman = Huffman(sys.argv[1])
 huffman.createEncodePaddedTextOutputFile()
+huffman.decompress()

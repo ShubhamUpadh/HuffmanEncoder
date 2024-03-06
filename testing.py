@@ -12,7 +12,7 @@ class randomStringGen:
     
     def genRandom(self):
         letters = string.ascii_letters +' '
-        self.rString = "".join(random.choice(letters) for i in range(20000))
+        self.rString = "".join(random.choice(letters) for i in range(20))
     
     def charFreq(self):
         for i in self.rString:
