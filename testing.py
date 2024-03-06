@@ -6,13 +6,14 @@ import string
 
 class randomStringGen:
     
-    def __init__(self):
+    def __init__(self,charNumbers):
         self.rString =""
         self.result = {'':1}
+        self.charNumbers = charNumbers
     
     def genRandom(self):
         letters = string.ascii_letters +' '
-        self.rString = "".join(random.choice(letters) for i in range(20))
+        self.rString = "".join(random.choice(letters) for i in range(self.charNumbers))
     
     def charFreq(self):
         for i in self.rString:
@@ -55,15 +56,18 @@ class Huffman:
 class TestHuff(unittest.TestCase):
     
     def test_String(self):
-        randomString = randomStringGen()
-        randomString.genRandom()
-        randomString.charFreq()
-        randomString.writeString()
-        
-        huffman = Huffman('baseTests')
-        huffman.charCount()
+        charNos = [20,2000,200000]
+        for charNumber in charNos:
+            randomString = randomStringGen(charNumber)
+            randomString.genRandom()
+            randomString.charFreq()
+            randomString.writeString()
+            
+            huffman = Huffman('baseTests')
+            huffman.charCount()
 
-        self.assertEqual(sorted(huffman.charFreq.items()),sorted(randomString.result.items()))
+            self.assertEqual(sorted(huffman.charFreq.items()),sorted(randomString.result.items()))
+            print(f"Passed the test for {charNumber} number of characters")
         
 
 if __name__ == '__main__':
