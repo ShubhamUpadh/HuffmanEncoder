@@ -13,4 +13,4 @@ Progress
 Learnings
 1. There will be no case where a = 00 and g = 001, because all the nodes are leaf nodes. Hence, 
 there is no chance of another node below a
-2.
+2. All the members of a class don't need to be public, only the ones that are needed
